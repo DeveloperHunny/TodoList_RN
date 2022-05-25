@@ -1,115 +1,85 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
-import React from 'react';
+import React, {FC, useRef, useState} from 'react';
+import {FlatList, Text, TextInput, View} from 'react-native';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+  color_active,
+  color_basic_strong,
+  color_no_active,
+  space_large,
+  styles,
+} from './styles';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {IconButton} from 'react-native-paper';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-const Section: React.FC<{
+interface todoItem {
   title: string;
-}> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
+  content: string;
+  complete: boolean;
+}
+
+const TodoItemView: FC<{item: todoItem}> = ({item}) => {
+  const {title, complete} = item;
+  const btnActive = useRef<string>(
+    complete === false ? color_no_active : color_active,
+  );
+  const onPressCompleteBtn = () => {
+    if (complete) {
+      btnActive.current = color_no_active;
+    } else {
+      btnActive.current = color_active;
+    }
+  };
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
+    <View style={styles.itemViewContainerStyle}>
+      <Text style={{fontWeight: 'bold', fontSize: 24, color: Colors.black}}>
         {title}
       </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+      <IconButton
+        icon="check-circle"
+        color={btnActive.current}
+        onPress={onPressCompleteBtn}
+        size={28}
+      />
     </View>
   );
 };
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [title, setTitle] = useState<string>('');
+  const [todoList, setTodoList] = useState<todoItem[]>([]);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const handleOnSubmit = () => {
+    setTodoList(prevState => {
+      return [
+        ...prevState,
+        {title: title, content: 'content', complete: false},
+      ];
+    });
+  };
+
+  const handleOnChangeText = (text: string) => {
+    setTitle(text);
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <View style={{backgroundColor: color_basic_strong, flex: 1}}>
+      <View style={styles.titleContainerStyle}>
+        <View>
+          <TextInput
+            style={styles.titleInputStyle}
+            placeholder="할일 목록을 입력하세요."
+            onSubmitEditing={handleOnSubmit}
+            onChangeText={handleOnChangeText}
+          />
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        <FlatList
+          style={{marginVertical: space_large, flex: 1}}
+          data={todoList}
+          renderItem={({item}) => <TodoItemView item={item} />}
+        />
+      </View>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
