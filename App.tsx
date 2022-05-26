@@ -1,64 +1,31 @@
-import React, {FC, useRef, useState} from 'react';
-import {FlatList, Text, TextInput, View} from 'react-native';
-import {
-  color_active,
-  color_basic_strong,
-  color_no_active,
-  space_large,
-  styles,
-} from './styles';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {IconButton} from 'react-native-paper';
-
-interface todoItem {
-  title: string;
-  content: string;
-  complete: boolean;
-}
-
-const TodoItemView: FC<{item: todoItem}> = ({item}) => {
-  const {title, complete} = item;
-  const btnActive = useRef<string>(
-    complete === false ? color_no_active : color_active,
-  );
-  const onPressCompleteBtn = () => {
-    if (complete) {
-      btnActive.current = color_no_active;
-    } else {
-      btnActive.current = color_active;
-    }
-  };
-
-  return (
-    <View style={styles.itemViewContainerStyle}>
-      <Text style={{fontWeight: 'bold', fontSize: 24, color: Colors.black}}>
-        {title}
-      </Text>
-      <IconButton
-        icon="check-circle"
-        color={btnActive.current}
-        onPress={onPressCompleteBtn}
-        size={28}
-      />
-    </View>
-  );
-};
+import React, {useCallback, useRef, useState} from 'react';
+import {Button, FlatList, TextInput, View} from 'react-native';
+import {color_basic_strong, space_large, styles} from './styles';
+import {todoItem} from './types';
+import TodoItemView from './TodoItemView';
 
 const App = () => {
   const [title, setTitle] = useState<string>('');
+  const itemId = useRef<number>(-1);
   const [todoList, setTodoList] = useState<todoItem[]>([]);
+  const [visible, setVisible] = useState(false);
 
   const handleOnSubmit = () => {
     setTodoList(prevState => {
+      itemId.current++;
       return [
         ...prevState,
-        {title: title, content: 'content', complete: false},
+        {id: itemId.current, title: title, content: 'content', complete: false},
       ];
     });
   };
 
-  const handleOnChangeText = (text: string) => {
+  const handleOnChangeText = useCallback((text: string) => {
     setTitle(text);
+  }, []);
+
+  const onClickShowDialogBtn = () => {
+    setVisible(!visible);
   };
 
   return (
@@ -75,8 +42,11 @@ const App = () => {
         <FlatList
           style={{marginVertical: space_large, flex: 1}}
           data={todoList}
-          renderItem={({item}) => <TodoItemView item={item} />}
+          renderItem={({item}) => {
+            return <TodoItemView item={item} dataList={todoList} />;
+          }}
         />
+        <Button title="show dialog" onPress={onClickShowDialogBtn} />
       </View>
     </View>
   );
