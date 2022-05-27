@@ -45,5 +45,17 @@
       "json",
       "node"
     ]
-  }
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DeveloperHunny/TodoList_RN.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DeveloperHunny/TodoList_RN/issues"
+  },
+  "homepage": "https://github.com/DeveloperHunny/TodoList_RN#readme",
+  "description": ""
 }

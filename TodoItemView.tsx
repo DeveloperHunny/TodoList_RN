@@ -1,45 +1,75 @@
-import React, {FC, useRef, useState} from 'react';
-import {todoItem} from './types';
+import React, {FC, useContext, useMemo, useRef, useState} from 'react';
+import {ActionTypes, todoItem} from './types';
 import {color_active, color_no_active, styles} from './styles';
 import {Text, TouchableOpacity, View} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {IconButton} from 'react-native-paper';
 import DialogView from './ContentDialogView';
+import {TodoContext} from './App';
 
-const TodoItemView: FC<{item: todoItem; dataList: todoItem[]}> = ({
-  item,
-  dataList,
-}) => {
-  const {id, title, content, complete} = item;
-  const [visible, setVisible] = useState(false);
+const TodoItemView: FC<{id: number}> = ({id}) => {
+  console.log('rendered ItemVIew');
+
+  const {todoList, dispatch} = useContext(TodoContext);
+  const currentItem = useMemo(
+    () => todoList.find(elem => elem.id === id),
+    [id, todoList],
+  );
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [complete, setComplete] = useState(currentItem!.complete);
+
+  todoList.forEach(elem => {
+    console.log(elem.id, elem.title, elem.content);
+  });
 
   const onPressCompleteBtn = () => {
-    console.log('press complete btn');
+    setComplete(!complete);
+    dispatch({type: ActionTypes.CLICK_COMPLETE, id: id});
   };
 
   const onPressItemView = () => {
-    console.log(`press item ${id} - title : ${title}`);
-    setVisible(true);
+    console.log('pressItemView');
+    setDialogVisible(true);
   };
 
-  const closeDialog = () => {
-    setVisible(false);
+  const onSaveItem = (content: string) => {
+    dispatch({
+      type: ActionTypes.MODIFY_TODO,
+      content: content,
+      id: id,
+    });
+    setDialogVisible(false);
+  };
+
+  const onDeleteItem = () => {
+    dispatch({type: ActionTypes.DELETE_TODO, id: id});
+    setDialogVisible(false);
+  };
+
+  const onCloseDialog = () => {
+    setDialogVisible(false);
   };
 
   return (
     <View>
-      {visible && (
-        <DialogView visible={visible} item={item} closeDialog={closeDialog} />
+      {dialogVisible && (
+        <DialogView
+          item={todoList.find(elem => elem.id === id)!}
+          visible={dialogVisible}
+          onSaveItem={onSaveItem}
+          onCloseDialog={onCloseDialog}
+          onDeleteItem={onDeleteItem}
+        />
       )}
       <TouchableOpacity
         style={styles.itemViewContainerStyle}
         onPress={onPressItemView}>
         <Text style={{fontWeight: 'bold', fontSize: 24, color: Colors.white}}>
-          {title}
+          {currentItem!.title}
         </Text>
         <IconButton
           icon="check-circle"
-          color={color_no_active} //나중에 수정 들어가야 함.
+          color={complete === true ? color_active : color_no_active} //나중에 수정 들어가야 함.
           onPress={onPressCompleteBtn}
           size={28}
         />
