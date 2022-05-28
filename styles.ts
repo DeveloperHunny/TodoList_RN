@@ -11,13 +11,17 @@ export const space_large = 32;
 export const space_small = 8;
 
 export const styles = StyleSheet.create({
+  rootContainerStyle: {
+    backgroundColor: color_basic_strong,
+    height: '100%',
+    width: '100%',
+  },
+
   titleContainerStyle: {
     backgroundColor: Colors.white,
     flex: 1,
-    marginTop: space_large,
-    marginLeft: space_large,
-    marginRight: space_large,
-    marginBottom: space_large,
+    marginHorizontal: space_large,
+    marginVertical: space_large,
     borderRadius: 16,
     paddingVertical: 32,
     paddingHorizontal: 16,

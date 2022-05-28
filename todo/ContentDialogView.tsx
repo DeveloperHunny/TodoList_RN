@@ -4,7 +4,7 @@ import DialogTitle from 'react-native-dialog/lib/Title';
 import DialogDescription from 'react-native-dialog/lib/Description';
 import DialogButton from 'react-native-dialog/lib/Button';
 import React, {FC, memo, useCallback, useState} from 'react';
-import {todoItem} from './types';
+import {todoItem} from '../types';
 import DialogInput from 'react-native-dialog/lib/Input';
 import DialogCodeInput from 'react-native-dialog/lib/CodeInput';
 import {Colors} from 'react-native-paper';
@@ -17,6 +17,7 @@ const DialogView: FC<{
   onDeleteItem: () => void;
 }> = memo(({item, visible, onSaveItem, onCloseDialog, onDeleteItem}) => {
   console.log('rendered Dialog');
+  console.log(item, visible, onSaveItem, onCloseDialog, onDeleteItem);
   const [content, setContent] = useState(item.content);
 
   const handleOnChangeText = useCallback((newText: string) => {
